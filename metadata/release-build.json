@@ -1,0 +1,54 @@
+{
+  "character_release": "0.2.0",
+  "character_build": "0.2.0-dev.30",
+  "voice_release": "0.1.0",
+  "voice_build": "0.1.0-dev.3",
+  "packages": [
+    {
+      "name": "LeMalin-0.2.0-Player.zip",
+      "source_build": "0.2.0-dev.30",
+      "bytes": 50827773,
+      "sha256": "2c245505702d386431382c62bb5150bc8fa07363c9173ce8db97c6f24a4e7c14",
+      "files": [
+        {
+          "name": "zzz_HcxmmxLeMalin_0_2_0_dev_30_P.pak",
+          "size": 512,
+          "sha256": "36307134b0b1c40a493c6db5afd675a241da1fbc2bdbb32dc45c7f1ea855bdf8"
+        },
+        {
+          "name": "zzz_HcxmmxLeMalin_0_2_0_dev_30_P.utoc",
+          "size": 115346,
+          "sha256": "d9b11c2c542ce725f263ad1071e9ccccbf1206092d7bf06b7690935186dbcb32"
+        },
+        {
+          "name": "zzz_HcxmmxLeMalin_0_2_0_dev_30_P.ucas",
+          "size": 489182240,
+          "sha256": "7b803aadcc33cab48fb23c6189e287849ed336bc2add5107959af6ab40f409f0"
+        }
+      ]
+    },
+    {
+      "name": "LeMalin-Voice-0.1.0.zip",
+      "source_build": "0.1.0-dev.3",
+      "bytes": 9268630,
+      "sha256": "bfb3cc6c6411ccf18db92f04cd94b1295b98f0cfb4c9143d15c36351267b55a3",
+      "files": [
+        {
+          "name": "zzz_HcxmmxLeMalinVoice_0_1_0_dev_3_P.pak",
+          "size": 347,
+          "sha256": "75e7144577253917f6da7312ef5e585b12fb728226a22b0938323751a6b555cd"
+        },
+        {
+          "name": "zzz_HcxmmxLeMalinVoice_0_1_0_dev_3_P.ucas",
+          "size": 19975300,
+          "sha256": "2785c5337a565fed14444f52806fe53c1124d428584814a3612d2aa4788a6ebd"
+        },
+        {
+          "name": "zzz_HcxmmxLeMalinVoice_0_1_0_dev_3_P.utoc",
+          "size": 12603,
+          "sha256": "9cac3088a277184d128b8474ea861fe21a330033b69710e51afc444efba9a817"
+        }
+      ]
+    }
+  ]
+}

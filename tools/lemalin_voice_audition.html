@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>恶毒语音 · 第一批试听</title>
+<style>
+  :root { color-scheme: dark; font-family: "Microsoft YaHei", sans-serif; }
+  body { max-width: 1040px; margin: 32px auto; padding: 0 20px 60px; background: #151a22; color: #e2e7ee; }
+  h1 { font-size: 26px; } h2 { font-size: 20px; margin-bottom: 8px; }
+  p { line-height: 1.7; } .muted { color: #b0bac9; font-size: 14px; }
+  button, select, input { font: inherit; padding: 7px 10px; border: 1px solid #4a5667; border-radius: 6px; background: #273242; color: inherit; }
+  button { cursor: pointer; } button:hover { background: #394c64; }
+  .player { position: sticky; top: 0; padding: 12px 16px; background: #202937; border: 1px solid #48576a; border-radius: 10px; z-index: 1; }
+  audio { width: 100%; margin-top: 8px; } #now { margin: 0; }
+  .card { padding: 16px; margin: 12px 0; border: 1px solid #364252; border-radius: 9px; background: #1d2530; }
+  .card.playing { border-color: #78cee0; }
+  .heading { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .id { color: #8edce9; font-size: 20px; min-width: 36px; }
+  .note { margin: 8px 0; } .marks { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+  input { flex: 1; min-width: 180px; } .tools { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin: 20px 0; }
+</style>
+<h1>恶毒语音 · 第一批试听</h1>
+<p>先听剪辑，再按需对照原录音。可以直接在聊天里反馈编号，也可以标注后导出结果。</p>
+<p class="muted">这批依据台词索引与静音断点初剪，用途和切点待试听选择。C 组含哈欠、睡息。剪辑做了短淡入淡出和基础音量调整，原录音保留原音量。</p>
+<div class="player">
+  <p id="now">选择一条或一组开始试听</p>
+  <audio id="player" controls preload="none"></audio>
+</div>
+<div class="tools"><button id="export">导出试听结果</button><span id="saveState" class="muted">可直接反馈编号</span></div>
+<main id="groups"></main>
+<script>
+const DATA = __DATA__;
+const player = document.getElementById('player');
+const now = document.getElementById('now');
+const storageKey = DATA.schema;
+let marks = {};
+let batchGroup = null;
+try { marks = JSON.parse(localStorage.getItem(storageKey) || '{}'); } catch (error) {}
+
+function save() {
+  try {
+    localStorage.setItem(storageKey, JSON.stringify(marks));
+    document.getElementById('saveState').textContent = '标注已保存到本浏览器，可导出备份';
+  } catch (error) {
+    document.getElementById('saveState').textContent = '请导出结果保存标注';
+  }
+}
+
+function highlight(id) {
+  document.querySelectorAll('.card').forEach(card => card.classList.toggle('playing', card.id === id));
+}
+
+function play(src, title, start = 0, group = null, id = null) {
+  player.pause();
+  batchGroup = group;
+  now.textContent = title;
+  highlight(id);
+  player.src = src;
+  player.onloadedmetadata = () => {
+    player.currentTime = start;
+    player.play().catch(error => { now.textContent = '播放失败，请重试或直接打开 WAV。' + error.message; });
+  };
+  player.load();
+}
+
+function button(text, action) {
+  const element = document.createElement('button');
+  element.textContent = text;
+  element.onclick = action;
+  return element;
+}
+
+for (const group of DATA.groups) {
+  const section = document.createElement('section');
+  const heading = document.createElement('h2');
+  heading.textContent = group.id + ' · ' + group.name;
+  section.append(heading);
+  const description = document.createElement('p');
+  description.className = 'muted';
+  description.textContent = group.note;
+  section.append(description);
+  section.append(button('▶ 本组连播 · ' + group.seconds.toFixed(1) + ' 秒', () => play(group.src, group.name + ' · 连播', 0, group.id)));
+
+  for (const clip of DATA.clips.filter(item => item.group === group.id)) {
+    const card = document.createElement('article');
+    card.className = 'card';
+    card.id = clip.id;
+    const top = document.createElement('div');
+    top.className = 'heading';
+    const id = document.createElement('strong');
+    id.className = 'id';
+    id.textContent = clip.id;
+    top.append(id, button('▶ 剪辑 · ' + clip.seconds.toFixed(2) + ' 秒', () => play(clip.src, clip.id + ' · 剪辑', 0, null, clip.id)));
+    top.append(button('▶ 原录音对照', () => play(clip.original, clip.id + ' · 原录音；剪辑范围 ' + clip.start.toFixed(2) + '–' + clip.end.toFixed(2) + ' 秒', Math.max(0, clip.start - .7), null, clip.id)));
+    card.append(top);
+    const note = document.createElement('p');
+    note.className = 'note';
+    note.textContent = clip.note;
+    card.append(note);
+    const source = document.createElement('div');
+    source.className = 'muted';
+    source.textContent = clip.skin_id + ' / ' + clip.key + ' · 原录音 ' + clip.start.toFixed(2) + '–' + clip.end.toFixed(2) + ' 秒';
+    card.append(source);
+    const controls = document.createElement('div');
+    controls.className = 'marks';
+    const select = document.createElement('select');
+    select.setAttribute('aria-label', clip.id + ' 取舍');
+    for (const [value, text] of [['', '待定'], ['keep', '喜欢／保留'], ['adjust', '调整后可用'], ['skip', '不用']]) {
+      select.append(new Option(text, value));
+    }
+    select.value = marks[clip.id]?.choice || '';
+    const input = document.createElement('input');
+    input.placeholder = '例如偏软、太长、尾音被截断，或改作其他用途';
+    input.setAttribute('aria-label', clip.id + ' 备注');
+    input.value = marks[clip.id]?.note || '';
+    function update() {
+      marks[clip.id] = {choice: select.value, note: input.value};
+      save();
+    }
+    select.onchange = update;
+    input.oninput = update;
+    controls.append(select, input);
+    card.append(controls);
+    section.append(card);
+  }
+  document.getElementById('groups').append(section);
+}
+
+player.ontimeupdate = () => {
+  if (!batchGroup) return;
+  const clip = DATA.clips.find(item => item.group === batchGroup && player.currentTime >= item.batch_start && player.currentTime < item.batch_end + .45);
+  if (clip) {
+    highlight(clip.id);
+    now.textContent = batchGroup + ' 组连播 · ' + clip.id;
+  }
+};
+player.onerror = () => { now.textContent = '音频加载失败，请确认 clips、originals 文件夹与试听页放在一起。'; };
+document.getElementById('export').onclick = () => {
+  const data = JSON.stringify({schema: DATA.schema, marks}, null, 2);
+  const url = URL.createObjectURL(new Blob([data], {type: 'application/json'}));
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = '恶毒第一批试听结果.json';
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+};
+</script>
+</html>

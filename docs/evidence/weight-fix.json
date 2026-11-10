@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "vertices": 153033,
+  "excluded_non_bone_groups": [
+    "mmd_edge_scale",
+    "mmd_vertex_order"
+  ],
+  "non_bone_weight_totals": {
+    "mmd_edge_scale": 153033.0,
+    "mmd_vertex_order": 76515.99999985805
+  },
+  "before_vertices_attached_to_root": 153033,
+  "before_root_weight_range": [
+    0.5,
+    0.6666659116744995
+  ],
+  "after_vertices_attached_to_root": 0,
+  "after_all_weights_normalized": true,
+  "max_real_influences": 4,
+  "rig_and_geometry_unchanged": true
+}

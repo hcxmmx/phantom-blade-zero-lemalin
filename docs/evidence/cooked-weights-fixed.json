@@ -1,0 +1,14 @@
+{
+  "vertices": 155700,
+  "vertices_with_root_weight": 0,
+  "root_weight_range": [
+    0.0,
+    0.0
+  ],
+  "weight_sum_range": [
+    0.9999999403953552,
+    1.0000000894069672
+  ],
+  "expected": "fixed",
+  "passed": true
+}
